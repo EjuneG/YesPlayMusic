@@ -12,18 +12,13 @@
         /></button-icon>
       </div>
       <div class="navigation-links">
-        <router-link to="/" :class="{ active: $route.name === 'home' }">{{
-          $t('nav.home')
+        <router-link to="/" :class="{ active: $route.name === 'library' }">{{
+          $t('nav.library')
         }}</router-link>
         <router-link
           to="/explore"
           :class="{ active: $route.name === 'explore' }"
           >{{ $t('nav.explore') }}</router-link
-        >
-        <router-link
-          to="/library"
-          :class="{ active: $route.name === 'library' }"
-          >{{ $t('nav.library') }}</router-link
         >
       </div>
       <div class="right-part">
@@ -152,7 +147,7 @@ export default {
     logout() {
       if (!confirm('确定要退出登录吗？')) return;
       doLogout();
-      this.$router.push({ name: 'home' });
+      this.$router.push({ name: 'library' });
     },
     toSettings() {
       this.$router.push({ name: 'settings' });
