@@ -37,6 +37,7 @@ const delay = ms =>
   });
 const excludeSaveKeys = [
   '_playing',
+  '_progress',
   '_personalFMLoading',
   '_personalFMNextLoading',
 ];

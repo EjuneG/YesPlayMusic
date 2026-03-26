@@ -2171,6 +2171,11 @@
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-linux-x64-gnu/-/rust-napi-linux-x64-gnu-0.4.0.tgz#6057fe710970d99df019794bff11fac48fbc6664"
   integrity sha512-HGywXQAcIQkTBpI66i+cPHvCr1t5smKuJJaTcwV/5WfoHYsP+uuO522R4XNV/EPEIV9PDUwinoemiDKUQumJVw==
 
+"@unblockneteasemusic/rust-napi-linux-x64-gnu@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@unblockneteasemusic/rust-napi-linux-x64-gnu/-/rust-napi-linux-x64-gnu-0.4.0.tgz#6057fe710970d99df019794bff11fac48fbc6664"
+  integrity sha512-HGywXQAcIQkTBpI66i+cPHvCr1t5smKuJJaTcwV/5WfoHYsP+uuO522R4XNV/EPEIV9PDUwinoemiDKUQumJVw==
+
 "@unblockneteasemusic/rust-napi-linux-x64-musl@0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-linux-x64-musl/-/rust-napi-linux-x64-musl-0.4.0.tgz#86dd367c46b71df7bbb014095602a5a967830c86"
@@ -13617,11 +13622,6 @@ vue-eslint-parser@^7.10.0:
     esquery "^1.4.0"
     lodash "^4.17.21"
     semver "^6.3.0"
-
-vue-gtag@1:
-  version "1.16.1"
-  resolved "https://registry.npmjs.org/vue-gtag/-/vue-gtag-1.16.1.tgz#edb2f20ab4f6c4d4d372dfecf8c1fcc8ab890181"
-  integrity sha512-5vs0pSGxdqrfXqN1Qwt0ZFXG0iTYjRMu/saddc7QIC5yp+DKgjWQRpGYVa7Pq+KbThxwzzMfo0sGi7ISa6NowA==
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"
