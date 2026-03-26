@@ -1,63 +1,92 @@
 <template>
   <div class="track-list">
     <ContextMenu ref="menu">
-      <div v-show="type !== 'cloudDisk'" class="item-info">
-        <img
-          :src="rightClickedTrackComputed.al.picUrl | resizeImage(224)"
-          loading="lazy"
-        />
-        <div class="info">
-          <div class="title">{{ rightClickedTrackComputed.name }}</div>
-          <div class="subtitle">{{ rightClickedTrackComputed.ar[0].name }}</div>
+      <template v-if="hasSelection">
+        <div class="item-info">
+          <div class="info">
+            <div class="title">已选择 {{ selectedIndexes.length }} 首歌曲</div>
+          </div>
         </div>
-      </div>
-      <hr v-show="type !== 'cloudDisk'" />
-      <div class="item" @click="play">{{ $t('contextMenu.play') }}</div>
-      <div class="item" @click="addToQueue">{{
-        $t('contextMenu.addToQueue')
-      }}</div>
-      <div
-        v-if="extraContextMenuItem.includes('removeTrackFromQueue')"
-        class="item"
-        @click="removeTrackFromQueue"
-        >从队列删除</div
-      >
-      <hr v-show="type !== 'cloudDisk'" />
-      <div
-        v-show="!isRightClickedTrackLiked && type !== 'cloudDisk'"
-        class="item"
-        @click="like"
-      >
-        {{ $t('contextMenu.saveToMyLikedSongs') }}
-      </div>
-      <div
-        v-show="isRightClickedTrackLiked && type !== 'cloudDisk'"
-        class="item"
-        @click="like"
-      >
-        {{ $t('contextMenu.removeFromMyLikedSongs') }}
-      </div>
-      <div
-        v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
-        class="item"
-        @click="removeTrackFromPlaylist"
-        >从歌单中删除</div
-      >
-      <div
-        v-show="type !== 'cloudDisk'"
-        class="item"
-        @click="addTrackToPlaylist"
-        >{{ $t('contextMenu.addToPlaylist') }}</div
-      >
-      <div v-show="type !== 'cloudDisk'" class="item" @click="copyLink">{{
-        $t('contextMenu.copyUrl')
-      }}</div>
-      <div
-        v-if="extraContextMenuItem.includes('removeTrackFromCloudDisk')"
-        class="item"
-        @click="removeTrackFromCloudDisk"
-        >从云盘中删除</div
-      >
+        <hr />
+        <div class="item" @click="addSelectionToQueue">{{
+          $t('contextMenu.addToQueue')
+        }}</div>
+        <div
+          v-show="type !== 'cloudDisk'"
+          class="item"
+          @click="addSelectionToPlaylist"
+          >{{ $t('contextMenu.addToPlaylist') }}</div
+        >
+        <div
+          v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
+          class="item"
+          @click="removeSelectionFromPlaylist"
+          >从歌单中删除</div
+        >
+        <hr />
+        <div class="item" @click="clearSelection">取消选择</div>
+      </template>
+      <template v-else>
+        <div v-show="type !== 'cloudDisk'" class="item-info">
+          <img
+            :src="rightClickedTrackComputed.al.picUrl | resizeImage(224)"
+            loading="lazy"
+          />
+          <div class="info">
+            <div class="title">{{ rightClickedTrackComputed.name }}</div>
+            <div class="subtitle">{{
+              rightClickedTrackComputed.ar[0].name
+            }}</div>
+          </div>
+        </div>
+        <hr v-show="type !== 'cloudDisk'" />
+        <div class="item" @click="play">{{ $t('contextMenu.play') }}</div>
+        <div class="item" @click="addToQueue">{{
+          $t('contextMenu.addToQueue')
+        }}</div>
+        <div
+          v-if="extraContextMenuItem.includes('removeTrackFromQueue')"
+          class="item"
+          @click="removeTrackFromQueue"
+          >从队列删除</div
+        >
+        <hr v-show="type !== 'cloudDisk'" />
+        <div
+          v-show="!isRightClickedTrackLiked && type !== 'cloudDisk'"
+          class="item"
+          @click="like"
+        >
+          {{ $t('contextMenu.saveToMyLikedSongs') }}
+        </div>
+        <div
+          v-show="isRightClickedTrackLiked && type !== 'cloudDisk'"
+          class="item"
+          @click="like"
+        >
+          {{ $t('contextMenu.removeFromMyLikedSongs') }}
+        </div>
+        <div
+          v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
+          class="item"
+          @click="removeTrackFromPlaylist"
+          >从歌单中删除</div
+        >
+        <div
+          v-show="type !== 'cloudDisk'"
+          class="item"
+          @click="addTrackToPlaylist"
+          >{{ $t('contextMenu.addToPlaylist') }}</div
+        >
+        <div v-show="type !== 'cloudDisk'" class="item" @click="copyLink">{{
+          $t('contextMenu.copyUrl')
+        }}</div>
+        <div
+          v-if="extraContextMenuItem.includes('removeTrackFromCloudDisk')"
+          class="item"
+          @click="removeTrackFromCloudDisk"
+          >从云盘中删除</div
+        >
+      </template>
     </ContextMenu>
 
     <div :style="listStyles">
@@ -67,10 +96,30 @@
         :track-prop="track"
         :track-no="index + 1"
         :highlight-playing-track="highlightPlayingTrack"
+        :selected="selectedIndexes.includes(index)"
         @dblclick.native="playThisList(track.id || track.songId)"
+        @click.native="handleClick($event, index)"
         @click.right.native="openMenu($event, track, index)"
       />
     </div>
+
+    <transition name="slide-up">
+      <div v-if="hasSelection" class="selection-bar">
+        <span class="selection-count"
+          >已选择 {{ selectedIndexes.length }} 首</span
+        >
+        <button @click="addSelectionToQueue">加入队列</button>
+        <button v-show="type !== 'cloudDisk'" @click="addSelectionToPlaylist"
+          >加入歌单</button
+        >
+        <button
+          v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
+          @click="removeSelectionFromPlaylist"
+          >从歌单删除</button
+        >
+        <button class="cancel" @click="clearSelection">取消</button>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -122,11 +171,7 @@ export default {
     extraContextMenuItem: {
       type: Array,
       default: () => {
-        return [
-          // 'removeTrackFromPlaylist'
-          // 'removeTrackFromQueue'
-          // 'removeTrackFromCloudDisk'
-        ];
+        return [];
       },
     },
     columnNumber: {
@@ -151,11 +196,19 @@ export default {
         al: { picUrl: '' },
       },
       rightClickedTrackIndex: -1,
+      selectedIndexes: [],
+      lastClickedIndex: -1,
       listStyles: {},
     };
   },
   computed: {
     ...mapState(['liked', 'player']),
+    hasSelection() {
+      return this.selectedIndexes.length > 0;
+    },
+    selectedTracks() {
+      return this.selectedIndexes.map(i => this.tracks[i]).filter(Boolean);
+    },
     isRightClickedTrackLiked() {
       return this.liked.songs.includes(this.rightClickedTrack?.id);
     },
@@ -178,11 +231,64 @@ export default {
         gridTemplateColumns: `repeat(${this.columnNumber}, 1fr)`,
       };
     }
+    document.addEventListener('keydown', this.handleKeydown);
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.handleKeydown);
   },
   methods: {
     ...mapMutations(['updateModal']),
     ...mapActions(['nextTrack', 'showToast', 'likeATrack']),
+    // --- 键盘快捷键 ---
+    handleKeydown(e) {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'Escape' && this.hasSelection) {
+        this.clearSelection();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && this.tracks.length) {
+        e.preventDefault();
+        this.selectedIndexes = this.tracks.map((_, i) => i);
+      }
+    },
+    // --- 选择逻辑 ---
+    handleClick(e, index) {
+      if (e.shiftKey) {
+        // Shift+click: 从锚点到当前的范围替换选中（不追加）
+        e.preventDefault();
+        const anchor =
+          this.lastClickedIndex !== -1 ? this.lastClickedIndex : index;
+        const start = Math.min(anchor, index);
+        const end = Math.max(anchor, index);
+        const range = [];
+        for (let i = start; i <= end; i++) {
+          range.push(i);
+        }
+        this.selectedIndexes = range;
+        // 不更新 lastClickedIndex，锚点保持不变
+      } else if (e.ctrlKey || e.metaKey) {
+        // Ctrl+click: 切换单个
+        const pos = this.selectedIndexes.indexOf(index);
+        if (pos === -1) {
+          this.selectedIndexes.push(index);
+        } else {
+          this.selectedIndexes.splice(pos, 1);
+        }
+        this.lastClickedIndex = index;
+      } else {
+        // 普通点击: 选中当前这一首，清除其他
+        this.selectedIndexes = [index];
+        this.lastClickedIndex = index;
+      }
+    },
+    clearSelection() {
+      this.selectedIndexes = [];
+      this.lastClickedIndex = -1;
+    },
+    // --- 右键菜单 ---
     openMenu(e, track, index = -1) {
+      if (this.hasSelection && !this.selectedIndexes.includes(index)) {
+        this.clearSelection();
+      }
       this.rightClickedTrack = track;
       this.rightClickedTrackIndex = index;
       this.$refs.menu.openMenu(e);
@@ -196,6 +302,7 @@ export default {
       };
       this.rightClickedTrackIndex = -1;
     },
+    // --- 播放 ---
     playThisList(trackID) {
       if (this.dbclickTrackFunc === 'default') {
         this.playThisListDefault(trackID);
@@ -226,6 +333,7 @@ export default {
         this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID);
       }
     },
+    // --- 单曲操作 ---
     play() {
       this.player.addTrackToPlayNext(this.rightClickedTrack.id, true);
     },
@@ -288,6 +396,58 @@ export default {
         this.rightClickedTrackIndex
       );
     },
+    // --- 批量操作 ---
+    addSelectionToQueue() {
+      this.selectedTracks.forEach(t => {
+        this.player.addTrackToPlayNext(t.id || t.songId);
+      });
+      this.showToast(`已将 ${this.selectedTracks.length} 首歌曲添加到队列`);
+      this.clearSelection();
+    },
+    addSelectionToPlaylist() {
+      if (!isAccountLoggedIn()) {
+        this.showToast(locale.t('toast.needToLogin'));
+        return;
+      }
+      const trackIDs = this.selectedTracks.map(t => t.id || t.songId).join(',');
+      this.updateModal({
+        modalName: 'addTrackToPlaylistModal',
+        key: 'show',
+        value: true,
+      });
+      this.updateModal({
+        modalName: 'addTrackToPlaylistModal',
+        key: 'selectedTrackID',
+        value: trackIDs,
+      });
+      this.clearSelection();
+    },
+    removeSelectionFromPlaylist() {
+      if (!isAccountLoggedIn()) {
+        this.showToast(locale.t('toast.needToLogin'));
+        return;
+      }
+      const count = this.selectedTracks.length;
+      if (confirm(`确定要从歌单删除 ${count} 首歌曲？`)) {
+        const trackIDs = this.selectedTracks.map(t => t.id).join(',');
+        addOrRemoveTrackFromPlaylist({
+          op: 'del',
+          pid: this.id,
+          tracks: trackIDs,
+        }).then(data => {
+          this.showToast(
+            data.body.code === 200
+              ? locale.t('toast.removedFromPlaylist')
+              : data.body.message
+          );
+          const idSet = new Set(this.selectedTracks.map(t => t.id));
+          this.$parent.tracks = this.$parent.tracks.filter(
+            t => !idSet.has(t.id)
+          );
+          this.clearSelection();
+        });
+      }
+    },
     removeTrackFromCloudDisk() {
       if (confirm(`确定要从云盘删除 ${this.rightClickedTrack.songName}？`)) {
         let trackID = this.rightClickedTrack.songId;
@@ -309,4 +469,67 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.track-list {
+  position: relative;
+}
+
+.selection-bar {
+  position: fixed;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: var(--color-secondary-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  user-select: none;
+
+  .selection-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  button {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 8px;
+    color: var(--color-text);
+    background: var(--color-primary-bg-for-transparent);
+    transition: 0.2s;
+    white-space: nowrap;
+    &:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+  }
+
+  button.cancel {
+    background: transparent;
+    opacity: 0.68;
+    &:hover {
+      opacity: 1;
+      background: var(--color-secondary-bg-for-transparent);
+      color: var(--color-text);
+    }
+  }
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-up-enter,
+.slide-up-leave-to {
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+}
+</style>

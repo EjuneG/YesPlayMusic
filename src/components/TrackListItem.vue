@@ -103,6 +103,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -179,6 +183,7 @@ export default {
         trackClass.push('disable');
       if (this.isPlaying && this.highlightPlayingTrack)
         trackClass.push('playing');
+      if (this.selected) trackClass.push('selected');
       if (this.focus) trackClass.push('focus');
       return trackClass;
     },
@@ -374,6 +379,10 @@ button {
     font-size: 22px;
     line-height: 22px;
   }
+}
+
+.track.selected {
+  background: var(--color-primary-bg);
 }
 
 .track.focus {
