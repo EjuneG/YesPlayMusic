@@ -2,7 +2,8 @@ import dbus from 'dbus-next';
 import { ipcMain, app } from 'electron';
 
 export function createMpris(window) {
-  const Player = require('mpris-service');
+  // Dynamic import: mpris-service is Linux-only and may not be available
+  const Player = require('mpris-service'); // eslint-disable-line
   const renderer = window.webContents;
 
   const player = Player({

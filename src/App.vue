@@ -7,10 +7,14 @@
       :style="{ overflow: enableScrolling ? 'auto' : 'hidden' }"
       @scroll="handleScroll"
     >
-      <keep-alive>
-        <router-view v-if="$route.meta.keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!$route.meta.keepAlive"></router-view>
+      <router-view v-slot="{ Component, route }">
+        <keep-alive>
+          <component :is="Component" v-if="route.meta.keepAlive" :key="route.path" />
+        </keep-alive>
+      </router-view>
+      <router-view v-slot="{ Component, route }">
+        <component :is="Component" v-if="!route.meta.keepAlive" :key="route.path" />
+      </router-view>
     </main>
     <transition name="slide-up">
       <Player v-if="enablePlayer" v-show="showPlayer" ref="player" />
@@ -35,6 +39,7 @@ import { ipcRenderer } from './electron/ipcRenderer';
 import { isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth';
 import Lyrics from './views/lyrics.vue';
 import { mapState } from 'vuex';
+import { changeAppearance } from '@/utils/common';
 
 export default {
   name: 'App',
@@ -46,6 +51,20 @@ export default {
     ModalNewPlaylist,
     Lyrics,
     Scrollbar,
+  },
+  provide() {
+    return {
+      scrollToMain: (...args) => {
+        this.$refs.main?.scrollTo(...args);
+      },
+      restoreScrollPosition: () => {
+        this.$refs.scrollbar?.restorePosition();
+      },
+      getMainRef: () => this.$refs.main,
+      setUserSelectNone: val => {
+        this.userSelectNone = val;
+      },
+    };
   },
   data() {
     return {
@@ -76,7 +95,13 @@ export default {
       return this.$route.name !== 'lastfmCallback';
     },
   },
+  watch: {
+    'settings.appearance'(val) {
+      changeAppearance(val);
+    },
+  },
   created() {
+    changeAppearance(this.settings.appearance);
     if (this.isElectron) ipcRenderer(this);
     window.addEventListener('keydown', this.handleKeydown);
     this.fetchData();
@@ -141,7 +166,7 @@ main::-webkit-scrollbar {
 .slide-up-leave-active {
   transition: transform 0.4s;
 }
-.slide-up-enter,
+.slide-up-enter-from,
 .slide-up-leave-to {
   transform: translateY(100%);
 }

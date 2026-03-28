@@ -26,6 +26,7 @@
 <script>
 export default {
   name: 'Scrollbar',
+  inject: ['getMainRef', 'setUserSelectNone', 'restoreScrollPosition'],
   data() {
     return {
       top: 0,
@@ -48,7 +49,7 @@ export default {
       };
     },
     main() {
-      return this.$parent.$refs.main;
+      return this.getMainRef();
     },
   },
 
@@ -92,7 +93,7 @@ export default {
     handleDragStart(e) {
       this.onDragClientY = e.clientY;
       this.isOnDrag = true;
-      this.$parent.userSelectNone = true;
+      this.setUserSelectNone(true);
       document.addEventListener('mousemove', this.handleDragMove);
       document.addEventListener('mouseup', this.handleDragEnd);
     },
@@ -112,7 +113,7 @@ export default {
     },
     handleDragEnd() {
       this.isOnDrag = false;
-      this.$parent.userSelectNone = false;
+      this.setUserSelectNone(false);
       document.removeEventListener('mousemove', this.handleDragMove);
       document.removeEventListener('mouseup', this.handleDragEnd);
     },
@@ -191,7 +192,7 @@ export default {
 .fade-leave-active {
   transition: opacity 0.2s;
 }
-.fade-enter,
+.fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }

@@ -25,10 +25,7 @@ const UNPLAYABLE_CONDITION = {
   PLAY_PREV_TRACK: 'playPrevTrack',
 };
 
-const electron =
-  process.env.IS_ELECTRON === true ? window.require('electron') : null;
-const ipcRenderer =
-  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null;
+const electronAPI = window.electronAPI || null;
 const delay = ms =>
   new Promise(resolve => {
     setTimeout(() => {
@@ -47,14 +44,14 @@ function setTitle(track) {
     ? `${track.name} · ${track.ar[0].name} - YesPlayMusic`
     : 'YesPlayMusic';
   if (isCreateTray) {
-    ipcRenderer?.send('updateTrayTooltip', document.title);
+    electronAPI?.send('updateTrayTooltip', document.title);
   }
   store.commit('updateTitle', document.title);
 }
 
 function setTrayLikeState(isLiked) {
   if (isCreateTray) {
-    ipcRenderer?.send('updateTrayLikeState', isLiked);
+    electronAPI?.send('updateTrayLikeState', isLiked);
   }
 }
 
@@ -205,7 +202,7 @@ export default class {
     if (this._howler) {
       this._howler.seek(value);
       if (isCreateMpris) {
-        ipcRenderer?.send('seeked', this._howler.seek());
+        electronAPI?.send('seeked', this._howler.seek());
       }
     }
   }
@@ -243,7 +240,7 @@ export default class {
   _setPlaying(isPlaying) {
     this._playing = isPlaying;
     if (isCreateTray) {
-      ipcRenderer?.send('updateTrayPlayState', this._playing);
+      electronAPI?.send('updateTrayPlayState', this._playing);
     }
   }
   _setIntervals() {
@@ -255,7 +252,7 @@ export default class {
       this._progress = this._howler.seek();
       localStorage.setItem('playerCurrentTrackTime', this._progress);
       if (isCreateMpris) {
-        ipcRenderer?.send('playerCurrentTrackTime', this._progress);
+        electronAPI?.send('playerCurrentTrackTime', this._progress);
       }
     }, 1000);
   }
@@ -444,7 +441,7 @@ export default class {
       }
     };
 
-    const retrieveSongInfo = await ipcRenderer.invoke(
+    const retrieveSongInfo = await electronAPI.invoke(
       'unblock-music',
       store.state.settings.unmSource,
       track,
@@ -634,22 +631,22 @@ export default class {
   // OSDLyrics 会检测 Mpris 状态并寻找对应歌词文件，所以要在更新 Mpris 状态之前保证歌词下载完成
   async _updateMprisState(track, metadata) {
     if (!store.state.settings.enableOsdlyricsSupport) {
-      return ipcRenderer?.send('metadata', metadata);
+      return electronAPI?.send('metadata', metadata);
     }
 
     let lyricContent = await getLyric(track.id);
 
     if (!lyricContent.lrc || !lyricContent.lrc.lyric) {
-      return ipcRenderer?.send('metadata', metadata);
+      return electronAPI?.send('metadata', metadata);
     }
 
-    ipcRenderer.send('sendLyrics', {
+    electronAPI.send('sendLyrics', {
       track,
       lyrics: lyricContent.lrc.lyric,
     });
 
-    ipcRenderer.on('saveLyricFinished', () => {
-      ipcRenderer?.send('metadata', metadata);
+    electronAPI.on('saveLyricFinished', () => {
+      electronAPI?.send('metadata', metadata);
     });
   }
   _updateMediaSessionPositionState() {
@@ -703,7 +700,7 @@ export default class {
     }
     let copyTrack = { ...track };
     copyTrack.dt -= seekTime * 1000;
-    ipcRenderer?.send('playDiscordPresence', copyTrack);
+    electronAPI?.send('playDiscordPresence', copyTrack);
   }
   _pauseDiscordPresence(track) {
     if (
@@ -712,7 +709,7 @@ export default class {
     ) {
       return null;
     }
-    ipcRenderer?.send('pauseDiscordPresence', track);
+    electronAPI?.send('pauseDiscordPresence', track);
   }
   _playNextTrack(isPersonal) {
     if (isPersonal) {
@@ -854,7 +851,7 @@ export default class {
   }
   seek(time = null, sendMpris = true) {
     if (isCreateMpris && sendMpris && time) {
-      ipcRenderer?.send('seeked', time);
+      electronAPI?.send('seeked', time);
     }
     if (time !== null) {
       this._howler?.seek(time);
@@ -963,7 +960,7 @@ export default class {
   sendSelfToIpcMain() {
     if (process.env.IS_ELECTRON !== true) return false;
     let liked = store.state.liked.songs.includes(this.currentTrack.id);
-    ipcRenderer?.send('player', {
+    electronAPI?.send('player', {
       playing: this.playing,
       likedCurrentTrack: liked,
     });
@@ -979,13 +976,13 @@ export default class {
       this.repeatMode = 'on';
     }
     if (isCreateMpris) {
-      ipcRenderer?.send('switchRepeatMode', this.repeatMode);
+      electronAPI?.send('switchRepeatMode', this.repeatMode);
     }
   }
   switchShuffle() {
     this.shuffle = !this.shuffle;
     if (isCreateMpris) {
-      ipcRenderer?.send('switchShuffle', this.shuffle);
+      electronAPI?.send('switchShuffle', this.shuffle);
     }
   }
   switchReversed() {

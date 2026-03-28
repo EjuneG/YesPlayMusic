@@ -39,7 +39,7 @@
           <span v-if="isAlbum" class="featured">
             <ArtistsInLine
               :artists="track.ar"
-              :exclude="$parent.albumObject.artist.name"
+              :exclude="albumObject.artist.name"
               prefix="-"
           /></span>
           <span
@@ -79,7 +79,7 @@
       </button>
     </div>
     <div v-if="showTrackTime" class="time">
-      {{ track.dt | formatTime }}
+      {{ formatTime(track.dt) }}
     </div>
 
     <div v-if="track.playCount" class="count"> {{ track.playCount }}</div>
@@ -90,6 +90,7 @@
 import ArtistsInLine from '@/components/ArtistsInLine.vue';
 import ExplicitSymbol from '@/components/ExplicitSymbol.vue';
 import { mapState } from 'vuex';
+import { formatTime } from '@/utils/filters';
 import { isNil } from 'lodash';
 
 export default {
@@ -107,6 +108,20 @@ export default {
       type: Boolean,
       default: false,
     },
+    type: {
+      type: String,
+      default: 'tracklist',
+    },
+    albumObject: {
+      type: Object,
+      default: () => ({
+        artist: { name: '' },
+      }),
+    },
+    rightClickedTrackId: {
+      type: Number,
+      default: 0,
+    },
   },
 
   data() {
@@ -114,7 +129,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['settings']),
+    ...mapState(['settings', 'liked']),
     track() {
       return this.type === 'cloudDisk'
         ? this.trackProp.simpleSong
@@ -155,9 +170,6 @@ export default {
         return tn === undefined ? this.track.alia[0] : tn;
       }
     },
-    type() {
-      return this.$parent.type;
-    },
     isAlbum() {
       return this.type === 'album';
     },
@@ -172,7 +184,7 @@ export default {
       return this.type === 'playlist';
     },
     isLiked() {
-      return this.$parent.liked.songs.includes(this.track?.id);
+      return this.liked.songs.includes(this.track?.id);
     },
     isPlaying() {
       return this.$store.state.player.currentTrack.id === this.track?.id;
@@ -188,11 +200,11 @@ export default {
       return trackClass;
     },
     isMenuOpened() {
-      return this.$parent.rightClickedTrack.id === this.track.id ? true : false;
+      return this.rightClickedTrackId === this.track.id ? true : false;
     },
     focus() {
       return (
-        (this.hover && this.$parent.rightClickedTrack.id === 0) ||
+        (this.hover && this.rightClickedTrackId === 0) ||
         this.isMenuOpened
       );
     },
@@ -216,15 +228,16 @@ export default {
   },
 
   methods: {
+    formatTime,
     goToAlbum() {
       if (this.track.al.id === 0) return;
       this.$router.push({ path: '/album/' + this.track.al.id });
     },
     playTrack() {
-      this.$parent.playThisList(this.track.id);
+      this.$emit('play-this-list', this.track.id);
     },
     likeThisSong() {
-      this.$parent.likeATrack(this.track.id);
+      this.$emit('like-a-track', this.track.id);
     },
   },
 };

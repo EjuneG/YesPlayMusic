@@ -7,22 +7,18 @@
  *
  * @returns { (message:string) => void }
  * Built-in alert function for browser environment
- * A function wrapping {@link dialog.showMessageBoxSync} for electron environment
+ * A function wrapping dialog.showMessageBoxSync via IPC for electron environment
  *
  * @see {@link https://github.com/electron/electron/issues/19977} for upstream electron issue
  */
 const nativeAlert = (() => {
-  if (process.env.IS_ELECTRON === true) {
-    const { dialog } = require('electron');
-    if (dialog) {
-      return message => {
-        var options = {
-          type: 'warning',
-          message,
-        };
-        dialog.showMessageBoxSync(null, options);
-      };
-    }
+  if (process.env.IS_ELECTRON === true && window.electronAPI) {
+    return message => {
+      window.electronAPI.invoke('show-message-box', {
+        type: 'warning',
+        message,
+      });
+    };
   }
   return alert;
 })();

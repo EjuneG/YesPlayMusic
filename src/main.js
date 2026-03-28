@@ -1,11 +1,10 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 import i18n from '@/locale';
-import '@/assets/icons';
-import '@/utils/filters';
-import './registerServiceWorker';
+import 'virtual:svg-icons-register';
+import SvgIcon from '@/components/SvgIcon.vue';
 import { dailyTask } from '@/utils/common';
 import '@/assets/css/global.scss';
 import NProgress from 'nprogress';
@@ -27,14 +26,12 @@ console.log(
   'background:unset;color:unset;'
 );
 
-Vue.config.productionTip = false;
-
 NProgress.configure({ showSpinner: false, trickleSpeed: 100 });
 dailyTask();
 
-new Vue({
-  i18n,
-  store,
-  router,
-  render: h => h(App),
-}).$mount('#app');
+const app = createApp(App);
+app.use(store);
+app.use(router);
+app.use(i18n);
+app.component('svg-icon', SvgIcon);
+app.mount('#app');

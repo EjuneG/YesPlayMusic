@@ -12,17 +12,17 @@
           -
           {{ mv.data.name }}
           <div class="buttons">
-            <button-icon class="button" @click.native="likeMV">
+            <button-icon class="button" @click="likeMV">
               <svg-icon v-if="mv.subed" icon-class="heart-solid"></svg-icon>
               <svg-icon v-else icon-class="heart"></svg-icon>
             </button-icon>
-            <button-icon class="button" @click.native="openMenu">
+            <button-icon class="button" @click="openMenu">
               <svg-icon icon-class="more"></svg-icon>
             </button-icon>
           </div>
         </div>
         <div class="info">
-          {{ mv.data.playCount | formatPlayCount }} Views ·
+          {{ formatPlayCount(mv.data.playCount) }} Views ·
           {{ mv.data.publishTime }}
         </div>
       </div>
@@ -45,6 +45,7 @@
 <script>
 import { mvDetail, mvUrl, simiMv, likeAMV } from '@/api/mv';
 import { isAccountLoggedIn } from '@/utils/auth';
+import { formatPlayCount } from '@/utils/filters';
 import NProgress from 'nprogress';
 import locale from '@/locale';
 import '@/assets/css/plyr.css';
@@ -100,6 +101,7 @@ export default {
     console.log('网易云你这mv音频码率也太糊了吧🙄');
   },
   methods: {
+    formatPlayCount,
     ...mapActions(['showToast']),
     getData(id) {
       mvDetail(id).then(data => {
@@ -144,13 +146,13 @@ export default {
       this.$refs.mvMenu.openMenu(e);
     },
     copyUrl(id) {
-      let showToast = this.showToast;
-      this.$copyText(`https://music.163.com/#/mv?id=${id}`)
-        .then(function () {
-          showToast(locale.t('toast.copied'));
+      navigator.clipboard
+        .writeText(`https://music.163.com/#/mv?id=${id}`)
+        .then(() => {
+          this.showToast(locale.t('toast.copied'));
         })
         .catch(error => {
-          showToast(`${locale.t('toast.copyFailed')}${error}`);
+          this.showToast(`${locale.t('toast.copyFailed')}${error}`);
         });
     },
     openInBrowser(id) {

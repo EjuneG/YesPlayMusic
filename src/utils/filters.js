@@ -1,10 +1,9 @@
-import Vue from 'vue';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import locale from '@/locale';
 
-Vue.filter('formatTime', (Milliseconds, format = 'HH:MM:SS') => {
+export function formatTime(Milliseconds, format = 'HH:MM:SS') {
   if (!Milliseconds) return '';
   dayjs.extend(duration);
   dayjs.extend(relativeTime);
@@ -38,16 +37,16 @@ Vue.filter('formatTime', (Milliseconds, format = 'HH:MM:SS') => {
       ? `${hours} ${hoursUnit} ${mins} ${minitesUnit}`
       : `${mins} ${minitesUnit}`;
   }
-});
+}
 
-Vue.filter('formatDate', (timestamp, format = 'MMM D, YYYY') => {
+export function formatDate(timestamp, format = 'MMM D, YYYY') {
   if (!timestamp) return '';
   if (locale.locale === 'zh-CN') format = 'YYYY年MM月DD日';
   else if (locale.locale === 'zh-TW') format = 'YYYY年MM月DD日';
   return dayjs(timestamp).format(format);
-});
+}
 
-Vue.filter('formatAlbumType', (type, album) => {
+export function formatAlbumType(type, album) {
   if (!type) return '';
   if (type === 'EP/Single') {
     return album.size === 1 ? 'Single' : 'EP';
@@ -58,18 +57,18 @@ Vue.filter('formatAlbumType', (type, album) => {
   } else {
     return type;
   }
-});
+}
 
-Vue.filter('resizeImage', (imgUrl, size = 512) => {
+export function resizeImage(imgUrl, size = 512) {
   if (!imgUrl) return '';
   let httpsImgUrl = imgUrl;
   if (imgUrl.slice(0, 5) !== 'https') {
     httpsImgUrl = 'https' + imgUrl.slice(4);
   }
   return `${httpsImgUrl}?param=${size}y${size}`;
-});
+}
 
-Vue.filter('formatPlayCount', count => {
+export function formatPlayCount(count) {
   if (!count) return '';
   if (locale.locale === 'zh-CN') {
     if (count > 100000000) {
@@ -105,9 +104,9 @@ Vue.filter('formatPlayCount', count => {
     }
     return count;
   }
-});
+}
 
-Vue.filter('toHttps', url => {
+export function toHttps(url) {
   if (!url) return '';
   return url.replace(/^http:/, 'https:');
-});
+}

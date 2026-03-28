@@ -4,10 +4,10 @@
       <Win32Titlebar v-if="enableWin32Titlebar" />
       <LinuxTitlebar v-if="enableLinuxTitlebar" />
       <div class="navigation-buttons">
-        <button-icon @click.native="go('back')"
+        <button-icon @click="go('back')"
           ><svg-icon icon-class="arrow-left"
         /></button-icon>
-        <button-icon @click.native="go('forward')"
+        <button-icon @click="go('forward')"
           ><svg-icon icon-class="arrow-right"
         /></button-icon>
       </div>
@@ -208,7 +208,7 @@ nav.has-custom-titlebar {
   flex: 1;
   display: flex;
   align-items: center;
-  .svg-icon {
+  :deep(.svg-icon) {
     height: 24px;
     width: 24px;
   }
@@ -256,7 +256,7 @@ nav.has-custom-titlebar {
 }
 
 .search {
-  .svg-icon {
+  :deep(.svg-icon) {
     height: 18px;
     width: 18px;
   }
@@ -276,7 +276,7 @@ nav.has-custom-titlebar {
     width: 200px;
   }
 
-  .svg-icon {
+  :deep(.svg-icon) {
     height: 15px;
     width: 15px;
     color: var(--color-text);
@@ -300,7 +300,7 @@ nav.has-custom-titlebar {
   .active {
     background: var(--color-primary-bg-for-transparent);
     input,
-    .svg-icon {
+    :deep(.svg-icon) {
       opacity: 1;
       color: var(--color-primary);
     }
@@ -311,7 +311,7 @@ nav.has-custom-titlebar {
   .search-box {
     .active {
       input,
-      .svg-icon {
+      :deep(.svg-icon) {
         color: var(--color-text);
       }
     }

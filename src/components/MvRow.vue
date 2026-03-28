@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'CoverVideo',
   props: {
@@ -42,11 +44,14 @@ export default {
       hoverVideoID: 0,
     };
   },
+  computed: {
+    ...mapState(['player']),
+  },
   methods: {
     goToMv(id) {
       let query = {};
-      if (this.$parent.player !== undefined) {
-        query = { autoplay: this.$parent.player.playing };
+      if (this.player !== undefined) {
+        query = { autoplay: this.player.playing };
       }
       this.$router.push({ path: '/mv/' + id, query });
     },
@@ -171,7 +176,7 @@ img {
 .fade-leave-active {
   transition: opacity 0.3s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter-from, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 </style>

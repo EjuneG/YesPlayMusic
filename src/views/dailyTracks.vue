@@ -25,6 +25,7 @@ export default {
   components: {
     TrackList,
   },
+  inject: ['scrollToMain'],
   data() {
     return {
       show: false,
@@ -42,7 +43,7 @@ export default {
     } else {
       this.show = true;
     }
-    this.$parent.$refs.main.scrollTo(0, 0);
+    this.scrollToMain(0, 0);
   },
   methods: {
     ...mapMutations(['updateDailyTracks']),
