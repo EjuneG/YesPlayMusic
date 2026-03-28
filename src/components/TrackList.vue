@@ -4,7 +4,9 @@
       <template v-if="hasSelection">
         <div class="item-info">
           <div class="info">
-            <div class="title">{{ $t('contextMenu.selectedNSongs', { n: selectedIndexes.length }) }}</div>
+            <div class="title">{{
+              $t('contextMenu.selectedNSongs', { n: selectedIndexes.length })
+            }}</div>
           </div>
         </div>
         <hr />
@@ -24,7 +26,9 @@
           >{{ $t('contextMenu.removeFromPlaylist') }}</div
         >
         <hr />
-        <div class="item" @click="clearSelection">{{ $t('contextMenu.clearSelection') }}</div>
+        <div class="item" @click="clearSelection">{{
+          $t('contextMenu.clearSelection')
+        }}</div>
       </template>
       <template v-else>
         <div v-show="type !== 'cloudDisk'" class="item-info">
@@ -113,7 +117,9 @@
         <span class="selection-count">{{
           $t('contextMenu.selectedNSongs', { n: selectedIndexes.length })
         }}</span>
-        <button @click="addSelectionToQueue">{{ $t('contextMenu.addToQueue') }}</button>
+        <button @click="addSelectionToQueue">{{
+          $t('contextMenu.addToQueue')
+        }}</button>
         <button v-show="type !== 'cloudDisk'" @click="addSelectionToPlaylist">{{
           $t('contextMenu.addToPlaylist')
         }}</button>
@@ -122,7 +128,9 @@
           @click="removeSelectionFromPlaylist"
           >{{ $t('contextMenu.removeFromPlaylist') }}</button
         >
-        <button class="cancel" @click="clearSelection">{{ $t('contextMenu.clearSelection') }}</button>
+        <button class="cancel" @click="clearSelection">{{
+          $t('contextMenu.clearSelection')
+        }}</button>
       </div>
     </transition>
   </div>
@@ -393,9 +401,7 @@ export default {
     },
     copyLink() {
       navigator.clipboard
-        .writeText(
-          `https://music.163.com/song?id=${this.rightClickedTrack.id}`
-        )
+        .writeText(`https://music.163.com/song?id=${this.rightClickedTrack.id}`)
         .then(() => {
           this.showToast(locale.t('toast.copied'));
         })

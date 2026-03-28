@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  createWebHashHistory,
+} from 'vue-router';
 import { isLooseLoggedIn, isAccountLoggedIn } from '@/utils/auth';
 
 const routes = [

@@ -44,10 +44,7 @@
           {{ album.description }}
         </div>
         <div class="buttons" style="margin-top: 32px">
-          <ButtonTwoTone
-            icon-class="play"
-            @click="playAlbumByID(album.id)"
-          >
+          <ButtonTwoTone icon-class="play" @click="playAlbumByID(album.id)">
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone
@@ -154,7 +151,12 @@ import { splitSoundtrackAlbumTitle, splitAlbumTitle } from '@/utils/common';
 import NProgress from 'nprogress';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { groupBy, toPairs, sortBy } from 'lodash';
-import { resizeImage, formatAlbumType, formatDate, formatTime } from '@/utils/filters';
+import {
+  resizeImage,
+  formatAlbumType,
+  formatDate,
+  formatTime,
+} from '@/utils/filters';
 
 import ExplicitSymbol from '@/components/ExplicitSymbol.vue';
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue';

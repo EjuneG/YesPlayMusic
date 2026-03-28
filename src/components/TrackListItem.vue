@@ -204,8 +204,7 @@ export default {
     },
     focus() {
       return (
-        (this.hover && this.rightClickedTrackId === 0) ||
-        this.isMenuOpened
+        (this.hover && this.rightClickedTrackId === 0) || this.isMenuOpened
       );
     },
     showUnavailableSongInGreyStyle() {

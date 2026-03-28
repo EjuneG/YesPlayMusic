@@ -257,9 +257,7 @@ class Background {
     if (devServerUrl) {
       // Development: load from Vite dev server
       this.window.loadURL(
-        showLibraryDefault
-          ? `${devServerUrl}/#/library`
-          : devServerUrl
+        showLibraryDefault ? `${devServerUrl}/#/library` : devServerUrl
       );
       this.window.webContents.openDevTools();
     } else {
