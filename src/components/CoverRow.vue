@@ -15,9 +15,7 @@
       <div class="text">
         <div v-if="showPlayCount" class="info">
           <span class="play-count"
-            ><svg-icon icon-class="play" />{{
-              item.playCount | formatPlayCount
-            }}
+            ><svg-icon icon-class="play" />{{ formatPlayCount(item.playCount) }}
           </span>
         </div>
         <div class="title" :style="{ fontSize: subTextFontSize }">
@@ -40,6 +38,7 @@
 <script>
 import Cover from '@/components/Cover.vue';
 import ExplicitSymbol from '@/components/ExplicitSymbol.vue';
+import { formatPlayCount } from '@/utils/filters';
 
 export default {
   name: 'CoverRow',
@@ -66,6 +65,7 @@ export default {
     },
   },
   methods: {
+    formatPlayCount,
     getSubText(item) {
       if (this.subText === 'copywriter') return item.copywriter;
       if (this.subText === 'description') return item.description;

@@ -17,7 +17,7 @@ import {
   isCreateTray,
   isCreateMpris,
 } from '@/utils/platform';
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
+import path from 'path';
 import { startNeteaseMusicApi } from './electron/services';
 import { initIpcMain } from './electron/ipcMain.js';
 import { createMenu } from './electron/menu';
@@ -26,14 +26,14 @@ import { createTouchBar } from './electron/touchBar';
 import { createDockMenu } from './electron/dockMenu';
 import { registerGlobalShortcut } from './electron/globalShortcut';
 import { autoUpdater } from 'electron-updater';
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+// electron-devtools-installer is only available in dev
 import { EventEmitter } from 'events';
 import express from 'express';
 import expressProxy from 'express-http-proxy';
 import Store from 'electron-store';
 import { createMpris, createDbus } from '@/electron/mpris';
 import { spawn } from 'child_process';
-const clc = require('cli-color');
+import clc from 'cli-color';
 const log = text => {
   console.log(`${clc.blueBright('[background.js]')} ${text}`);
 };
@@ -128,11 +128,14 @@ class Background {
   }
 
   async initDevtools() {
-    // Install Vue Devtools extension
+    // Install Vue Devtools extension (dev only)
     try {
+      const { default: installExtension, VUEJS_DEVTOOLS } = await import(
+        'electron-devtools-installer'
+      );
       await installExtension(VUEJS_DEVTOOLS);
     } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString());
+      // Silently ignore in production where the module is not available
     }
 
     // Exit cleanly on request from parent process in development mode.
@@ -152,8 +155,13 @@ class Background {
   createExpressApp() {
     log('creating express app');
 
+    // In production, serve the Vite-built renderer from dist/
+    const rendererDir = isDevelopment
+      ? path.join(__dirname, '../public')
+      : path.join(__dirname, '../dist');
+
     const expressApp = express();
-    expressApp.use('/', express.static(__dirname + '/'));
+    expressApp.use('/', express.static(rendererDir));
     expressApp.use('/api', expressProxy('http://127.0.0.1:10754'));
     expressApp.use('/player', (req, res) => {
       this.window.webContents
@@ -189,10 +197,9 @@ class Background {
       title: 'YesPlayMusic',
       show: false,
       webPreferences: {
-        webSecurity: false,
-        nodeIntegration: true,
-        enableRemoteModule: true,
-        contextIsolation: false,
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.js'),
       },
       backgroundColor:
         ((appearance === undefined || appearance === 'auto') &&
@@ -246,16 +253,15 @@ class Background {
     // hide menu bar on Microsoft Windows and Linux
     this.window.setMenuBarVisibility(false);
 
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
-      // Load the url of the dev server if in development mode
+    const devServerUrl = process.env.VITE_DEV_SERVER_URL;
+    if (devServerUrl) {
+      // Development: load from Vite dev server
       this.window.loadURL(
-        showLibraryDefault
-          ? `${process.env.WEBPACK_DEV_SERVER_URL}/#/library`
-          : process.env.WEBPACK_DEV_SERVER_URL
+        showLibraryDefault ? `${devServerUrl}/#/library` : devServerUrl
       );
-      if (!process.env.IS_TEST) this.window.webContents.openDevTools();
+      this.window.webContents.openDevTools();
     } else {
-      createProtocol('app');
+      // Production: load from local Express server serving built files
       this.window.loadURL(
         showLibraryDefault
           ? 'http://localhost:27232/#/library'
@@ -282,7 +288,7 @@ class Background {
         .then(result => {
           if (result.response === 0) {
             shell.openExternal(
-              'https://github.com/qier222/YesPlayMusic/releases'
+              'https://github.com/EjuneG/YesPlayMusic/releases'
             );
           }
         });
@@ -353,10 +359,8 @@ class Background {
           titleBarStyle: 'default',
           title: 'YesPlayMusic',
           webPreferences: {
-            webSecurity: false,
-            nodeIntegration: true,
-            enableRemoteModule: true,
-            contextIsolation: false,
+            nodeIntegration: false,
+            contextIsolation: true,
           },
         });
         newWindow.loadURL(url);

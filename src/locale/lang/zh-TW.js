@@ -248,6 +248,9 @@ export default {
     cardiacMode: '心動模式',
     copyLyric: '複製歌詞',
     copyLyricWithTranslation: '複製歌詞（含翻譯）',
+    selectedNSongs: '已選擇 {n} 首歌曲',
+    removeFromPlaylist: '從歌單中刪除',
+    clearSelection: '取消選擇',
   },
   toast: {
     savedToPlaylist: '已新增至歌單',

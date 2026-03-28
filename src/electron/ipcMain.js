@@ -6,7 +6,7 @@ import shortcuts from '@/utils/shortcuts';
 import { createMenu } from './menu';
 import { isCreateTray, isMac } from '@/utils/platform';
 
-const clc = require('cli-color');
+import clc from 'cli-color';
 const log = text => {
   console.log(`${clc.blueBright('[ipcMain.js]')} ${text}`);
 };
@@ -71,7 +71,8 @@ const exitAskWithoutMac = (e, win) => {
     });
 };
 
-const client = require('discord-rich-presence')('818936529484906596');
+import createDiscordRPC from 'discord-rich-presence';
+const client = createDiscordRPC('818936529484906596');
 
 /**
  * Make data a Buffer.
@@ -134,6 +135,10 @@ function parseSourceStringToList(executor, sourceString) {
 }
 
 export function initIpcMain(win, store, trayEventEmitter) {
+  ipcMain.handle('show-message-box', (_, options) => {
+    return dialog.showMessageBoxSync(null, options);
+  });
+
   // WIP: Do not enable logging as it has some issues in non-blocking I/O environment.
   // UNM.enableLogging(UNM.LoggingType.ConsoleEnv);
   const unmExecutor = new UNM.Executor();

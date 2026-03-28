@@ -1,7 +1,8 @@
-/* global __static */
 import path from 'path';
 import { app, nativeImage, Tray, Menu, nativeTheme } from 'electron';
 import { isLinux } from '@/utils/platform';
+
+const __static = path.join(__dirname, '../public');
 
 function createMenuTemplate(win) {
   return [

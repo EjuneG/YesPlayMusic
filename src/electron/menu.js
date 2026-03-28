@@ -1,5 +1,5 @@
 import defaultShortcuts from '@/utils/shortcuts';
-const { app, Menu } = require('electron');
+import { app, Menu, shell } from 'electron';
 // import { autoUpdater } from "electron-updater"
 // const version = app.getVersion();
 
@@ -172,14 +172,12 @@ export function createMenu(win, store) {
         {
           label: 'GitHub',
           click: async () => {
-            const { shell } = require('electron');
             await shell.openExternal('https://github.com/qier222/YesPlayMusic');
           },
         },
         {
           label: 'Electron',
           click: async () => {
-            const { shell } = require('electron');
             await shell.openExternal('https://electronjs.org');
           },
         },

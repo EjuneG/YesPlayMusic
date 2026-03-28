@@ -1,6 +1,9 @@
-const { TouchBar, nativeImage, ipcMain } = require('electron');
+import { TouchBar, nativeImage, ipcMain } from 'electron';
+import path from 'path';
+
 const { TouchBarButton, TouchBarSpacer } = TouchBar;
-const path = require('path');
+
+const __static = path.join(__dirname, '../public');
 
 export function createTouchBar(window) {
   const renderer = window.webContents;

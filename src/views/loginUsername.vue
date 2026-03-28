@@ -33,7 +33,7 @@
           >
             <img
               class="head"
-              :src="user.avatarUrl | resizeImage"
+              :src="resizeImage(user.avatarUrl)"
               loading="lazy"
             />
             <div class="nickname">
@@ -44,7 +44,7 @@
       </div>
       <ButtonTwoTone
         v-show="activeUser.nickname !== undefined"
-        @click.native="confirm"
+        @click="confirm"
       >
         {{ $t('login.confirm') }}
       </ButtonTwoTone>
@@ -58,6 +58,7 @@ import NProgress from 'nprogress';
 import { search } from '@/api/others';
 import { userPlaylist } from '@/api/user';
 import { throttle } from '@/utils/common';
+import { resizeImage } from '@/utils/filters';
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
 
@@ -77,6 +78,7 @@ export default {
     NProgress.done();
   },
   methods: {
+    resizeImage,
     ...mapMutations(['updateData']),
     search() {
       if (!this.keyword) return;

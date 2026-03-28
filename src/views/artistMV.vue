@@ -3,13 +3,13 @@
     <h1>
       <img
         class="avatar"
-        :src="artist.img1v1Url | resizeImage(1024)"
+        :src="resizeImage(artist.img1v1Url, 1024)"
         loading="lazy"
       />{{ artist.name }}'s Music Videos
     </h1>
     <MvRow :mvs="mvs" subtitle="publishTime" />
     <div class="load-more">
-      <ButtonTwoTone v-show="hasMore" color="grey" @click.native="loadMVs">{{
+      <ButtonTwoTone v-show="hasMore" color="grey" @click="loadMVs">{{
         $t('explore.loadMore')
       }}</ButtonTwoTone>
     </div>
@@ -19,6 +19,7 @@
 <script>
 import { artistMv, getArtist } from '@/api/artist';
 import NProgress from 'nprogress';
+import { resizeImage } from '@/utils/filters';
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
 import MvRow from '@/components/MvRow.vue';
@@ -58,6 +59,7 @@ export default {
     }
   },
   methods: {
+    resizeImage,
     loadData() {
       setTimeout(() => {
         if (!this.show) NProgress.start();

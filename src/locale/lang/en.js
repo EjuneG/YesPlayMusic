@@ -252,6 +252,9 @@ export default {
     cardiacMode: 'Cardiac Mode',
     copyLyric: 'Copy Lyric',
     copyLyricWithTranslation: 'Copy Lyric With Translation',
+    selectedNSongs: '{n} songs selected',
+    removeFromPlaylist: 'Remove from playlist',
+    clearSelection: 'Clear selection',
   },
   toast: {
     savedToPlaylist: 'Saved to playlist',

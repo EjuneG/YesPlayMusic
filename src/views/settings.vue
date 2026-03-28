@@ -775,10 +775,7 @@ import { changeAppearance, bytesToSize } from '@/utils/common';
 import { countDBSize, clearDB } from '@/utils/db';
 import pkg from '../../package.json';
 
-const electron =
-  process.env.IS_ELECTRON === true ? window.require('electron') : null;
-const ipcRenderer =
-  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null;
+const electronAPI = window.electronAPI || null;
 
 const validShortcutCodes = ['=', '-', '~', '[', ']', ';', "'", ',', '.', '/'];
 
@@ -911,7 +908,7 @@ export default {
           value,
         });
         if (this.isElectron) {
-          ipcRenderer.send('updateTrayIcon', value);
+          electronAPI.send('updateTrayIcon', value);
         }
       },
     },
@@ -1125,7 +1122,7 @@ export default {
         let config = this.settings.proxyConfig || {};
         config.protocol = value;
         if (value === 'noProxy') {
-          ipcRenderer.send('removeProxy');
+          electronAPI.send('removeProxy');
           this.showToast('已关闭代理');
         }
         this.$store.commit('updateSettings', {
@@ -1352,9 +1349,9 @@ export default {
         !config.port ||
         config.protocol === 'noProxy'
       ) {
-        ipcRenderer.send('removeProxy');
+        electronAPI.send('removeProxy');
       } else {
-        ipcRenderer.send('setProxy', config);
+        electronAPI.send('setProxy', config);
       }
       this.showToast('已更新代理设置');
     },
@@ -1389,7 +1386,7 @@ export default {
       }
       this.shortcutInput = { id, type, recording: true };
       this.recordedShortcut = [];
-      ipcRenderer.send('switchGlobalShortcutStatusTemporary', 'disable');
+      electronAPI.send('switchGlobalShortcutStatusTemporary', 'disable');
     },
     handleShortcutKeydown(e) {
       if (this.shortcutInput.recording === false) return;
@@ -1421,7 +1418,7 @@ export default {
         shortcut: this.recordedShortcutComputed,
       };
       this.$store.commit('updateShortcut', payload);
-      ipcRenderer.send('updateShortcut', payload);
+      electronAPI.send('updateShortcut', payload);
       this.showToast('快捷键已保存');
       this.recordedShortcut = [];
     },
@@ -1429,11 +1426,11 @@ export default {
       if (this.shortcutInput.recording === false) return;
       this.shortcutInput = { id: '', type: '', recording: false };
       this.recordedShortcut = [];
-      ipcRenderer.send('switchGlobalShortcutStatusTemporary', 'enable');
+      electronAPI.send('switchGlobalShortcutStatusTemporary', 'enable');
     },
     restoreDefaultShortcuts() {
       this.$store.commit('restoreDefaultShortcuts');
-      ipcRenderer.send('restoreDefaultShortcuts');
+      electronAPI.send('restoreDefaultShortcuts');
     },
   },
 };

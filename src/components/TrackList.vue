@@ -1,10 +1,12 @@
 <template>
   <div class="track-list">
-    <ContextMenu ref="menu">
+    <ContextMenu ref="menu" @close-menu="closeMenu">
       <template v-if="hasSelection">
         <div class="item-info">
           <div class="info">
-            <div class="title">已选择 {{ selectedIndexes.length }} 首歌曲</div>
+            <div class="title">{{
+              $t('contextMenu.selectedNSongs', { n: selectedIndexes.length })
+            }}</div>
           </div>
         </div>
         <hr />
@@ -21,15 +23,17 @@
           v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
           class="item"
           @click="removeSelectionFromPlaylist"
-          >从歌单中删除</div
+          >{{ $t('contextMenu.removeFromPlaylist') }}</div
         >
         <hr />
-        <div class="item" @click="clearSelection">取消选择</div>
+        <div class="item" @click="clearSelection">{{
+          $t('contextMenu.clearSelection')
+        }}</div>
       </template>
       <template v-else>
         <div v-show="type !== 'cloudDisk'" class="item-info">
           <img
-            :src="rightClickedTrackComputed.al.picUrl | resizeImage(224)"
+            :src="resizeImage(rightClickedTrackComputed.al.picUrl, 224)"
             loading="lazy"
           />
           <div class="info">
@@ -97,27 +101,36 @@
         :track-no="index + 1"
         :highlight-playing-track="highlightPlayingTrack"
         :selected="selectedIndexes.includes(index)"
-        @dblclick.native="playThisList(track.id || track.songId)"
-        @click.native="handleClick($event, index)"
-        @click.right.native="openMenu($event, track, index)"
+        :type="type"
+        :album-object="albumObject"
+        :right-clicked-track-id="rightClickedTrack.id"
+        @play-this-list="playThisList"
+        @like-a-track="likeATrack"
+        @dblclick="playThisList(track.id || track.songId)"
+        @click="handleClick($event, index)"
+        @click.right="openMenu($event, track, index)"
       />
     </div>
 
     <transition name="slide-up">
-      <div v-if="hasSelection" class="selection-bar">
-        <span class="selection-count"
-          >已选择 {{ selectedIndexes.length }} 首</span
-        >
-        <button @click="addSelectionToQueue">加入队列</button>
-        <button v-show="type !== 'cloudDisk'" @click="addSelectionToPlaylist"
-          >加入歌单</button
-        >
+      <div v-if="showSelectionBar" class="selection-bar">
+        <span class="selection-count">{{
+          $t('contextMenu.selectedNSongs', { n: selectedIndexes.length })
+        }}</span>
+        <button @click="addSelectionToQueue">{{
+          $t('contextMenu.addToQueue')
+        }}</button>
+        <button v-show="type !== 'cloudDisk'" @click="addSelectionToPlaylist">{{
+          $t('contextMenu.addToPlaylist')
+        }}</button>
         <button
           v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
           @click="removeSelectionFromPlaylist"
-          >从歌单删除</button
+          >{{ $t('contextMenu.removeFromPlaylist') }}</button
         >
-        <button class="cancel" @click="clearSelection">取消</button>
+        <button class="cancel" @click="clearSelection">{{
+          $t('contextMenu.clearSelection')
+        }}</button>
       </div>
     </transition>
   </div>
@@ -128,6 +141,7 @@ import { mapActions, mapMutations, mapState } from 'vuex';
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist';
 import { cloudDiskTrackDelete } from '@/api/user';
 import { isAccountLoggedIn } from '@/utils/auth';
+import { resizeImage } from '@/utils/filters';
 
 import TrackListItem from '@/components/TrackListItem.vue';
 import ContextMenu from '@/components/ContextMenu.vue';
@@ -204,7 +218,11 @@ export default {
   computed: {
     ...mapState(['liked', 'player']),
     hasSelection() {
-      return this.selectedIndexes.length > 0;
+      return this.selectedIndexes.length > 1;
+    },
+    showSelectionBar() {
+      const allowedRoutes = ['playlist', 'album', 'likedSongs', 'dailySongs'];
+      return this.hasSelection && allowedRoutes.includes(this.$route.name);
     },
     selectedTracks() {
       return this.selectedIndexes.map(i => this.tracks[i]).filter(Boolean);
@@ -233,12 +251,13 @@ export default {
     }
     document.addEventListener('keydown', this.handleKeydown);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener('keydown', this.handleKeydown);
   },
   methods: {
     ...mapMutations(['updateModal']),
     ...mapActions(['nextTrack', 'showToast', 'likeATrack']),
+    resizeImage,
     // --- 键盘快捷键 ---
     handleKeydown(e) {
       if (e.target.tagName === 'INPUT') return;
@@ -376,14 +395,13 @@ export default {
               ? locale.t('toast.removedFromPlaylist')
               : data.body.message
           );
-          this.$parent.removeTrack(trackID);
+          this.$emit('remove-track', trackID);
         });
       }
     },
     copyLink() {
-      this.$copyText(
-        `https://music.163.com/song?id=${this.rightClickedTrack.id}`
-      )
+      navigator.clipboard
+        .writeText(`https://music.163.com/song?id=${this.rightClickedTrack.id}`)
         .then(() => {
           this.showToast(locale.t('toast.copied'));
         })
@@ -440,10 +458,8 @@ export default {
               ? locale.t('toast.removedFromPlaylist')
               : data.body.message
           );
-          const idSet = new Set(this.selectedTracks.map(t => t.id));
-          this.$parent.tracks = this.$parent.tracks.filter(
-            t => !idSet.has(t.id)
-          );
+          const trackIDs = this.selectedTracks.map(t => t.id);
+          this.$emit('remove-tracks', trackIDs);
           this.clearSelection();
         });
       }
@@ -527,7 +543,7 @@ export default {
 .slide-up-leave-active {
   transition: all 0.3s ease;
 }
-.slide-up-enter,
+.slide-up-enter-from,
 .slide-up-leave-to {
   transform: translateX(-50%) translateY(20px);
   opacity: 0;

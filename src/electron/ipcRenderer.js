@@ -4,38 +4,28 @@ const player = store.state.player;
 
 export function ipcRenderer(vueInstance) {
   const self = vueInstance;
-  // 添加专有的类名
+  const api = window.electronAPI;
+
   document.body.setAttribute('data-electron', 'yes');
-  document.body.setAttribute(
-    'data-electron-os',
-    window.require('os').platform()
-  );
-  // ipc message channel
-  const electron = window.require('electron');
-  const ipcRenderer = electron.ipcRenderer;
+  document.body.setAttribute('data-electron-os', api.platform);
 
-  // listens to the main process 'changeRouteTo' event and changes the route from
-  // inside this Vue instance, according to what path the main process requires.
-  // responds to Menu click() events at the main process and changes the route accordingly.
-
-  ipcRenderer.on('changeRouteTo', (event, path) => {
+  api.on('changeRouteTo', path => {
     self.$router.push(path);
     if (store.state.showLyrics) {
       store.commit('toggleLyrics');
     }
   });
 
-  ipcRenderer.on('search', () => {
-    // 触发数据响应
+  api.on('search', () => {
     self.$refs.navbar.$refs.searchInput.focus();
     self.$refs.navbar.inputFocus = true;
   });
 
-  ipcRenderer.on('play', () => {
+  api.on('play', () => {
     player.playOrPause();
   });
 
-  ipcRenderer.on('next', () => {
+  api.on('next', () => {
     if (player.isPersonalFM) {
       player.playNextFMTrack();
     } else {
@@ -43,52 +33,52 @@ export function ipcRenderer(vueInstance) {
     }
   });
 
-  ipcRenderer.on('previous', () => {
+  api.on('previous', () => {
     player.playPrevTrack();
   });
 
-  ipcRenderer.on('increaseVolume', () => {
+  api.on('increaseVolume', () => {
     if (player.volume + 0.1 >= 1) {
       return (player.volume = 1);
     }
     player.volume += 0.1;
   });
 
-  ipcRenderer.on('decreaseVolume', () => {
+  api.on('decreaseVolume', () => {
     if (player.volume - 0.1 <= 0) {
       return (player.volume = 0);
     }
     player.volume -= 0.1;
   });
 
-  ipcRenderer.on('like', () => {
+  api.on('like', () => {
     store.dispatch('likeATrack', player.currentTrack.id);
   });
 
-  ipcRenderer.on('repeat', () => {
+  api.on('repeat', () => {
     player.switchRepeatMode();
   });
 
-  ipcRenderer.on('shuffle', () => {
+  api.on('shuffle', () => {
     player.switchShuffle();
   });
 
-  ipcRenderer.on('routerGo', (event, where) => {
+  api.on('routerGo', where => {
     self.$refs.navbar.go(where);
   });
 
-  ipcRenderer.on('nextUp', () => {
+  api.on('nextUp', () => {
     self.$refs.player.goToNextTracksPage();
   });
 
-  ipcRenderer.on('rememberCloseAppOption', (event, value) => {
+  api.on('rememberCloseAppOption', value => {
     store.commit('updateSettings', {
       key: 'closeAppOption',
       value,
     });
   });
 
-  ipcRenderer.on('setPosition', (event, position) => {
+  api.on('setPosition', position => {
     player._howler.seek(position);
   });
 }

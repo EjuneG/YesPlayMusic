@@ -1,11 +1,9 @@
 export function getSendSettingsPlugin() {
-  const electron = window.require('electron');
-  const ipcRenderer = electron.ipcRenderer;
+  const api = window.electronAPI;
   return store => {
     store.subscribe((mutation, state) => {
-      // console.log(mutation);
       if (mutation.type !== 'updateSettings') return;
-      ipcRenderer.send('settings', state.settings);
+      api.send('settings', state.settings);
     });
   };
 }
