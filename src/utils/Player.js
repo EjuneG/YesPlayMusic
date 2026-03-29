@@ -421,6 +421,24 @@ export default class {
       return null;
     }
 
+    // Check UNM native module availability (once per session)
+    if (this._unmChecked !== true) {
+      this._unmChecked = true;
+      try {
+        const status = await electronAPI.invoke('unm-status');
+        this._unmAvailable = status?.available === true;
+        if (!this._unmAvailable) {
+          store.dispatch(
+            'showToast',
+            'UnblockNeteaseMusic 模块加载失败，灰色歌曲解锁功能暂不可用'
+          );
+        }
+      } catch {
+        this._unmAvailable = false;
+      }
+    }
+    if (!this._unmAvailable) return null;
+
     /**
      *
      * @param {string=} searchMode

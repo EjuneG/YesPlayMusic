@@ -7,6 +7,9 @@ directories:
   app: .
 
 asar: true
+asarUnpack:
+  - "**/*.node"
+  - "node_modules/@unblockneteasemusic/**"
 
 files:
   - dist/**/*
@@ -23,6 +26,18 @@ publish:
     repo: YesPlayMusic
     releaseType: release
 
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icons/icon.ico
+
+nsis:
+  oneClick: true
+  perMachine: true
+  deleteAppDataOnUninstall: true
+
 linux:
   target:
     - target: AppImage
@@ -30,3 +45,12 @@ linux:
         - x64
   category: Music
   icon: build/icons
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+  category: public.app-category.music
+  icon: build/icons/icon.icns

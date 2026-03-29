@@ -1,5 +1,10 @@
 import { app, dialog, globalShortcut, ipcMain } from 'electron';
-import UNM from '@unblockneteasemusic/rust-napi';
+let UNM;
+try {
+  UNM = require('@unblockneteasemusic/rust-napi');
+} catch (e) {
+  console.warn('[ipcMain] Failed to load @unblockneteasemusic/rust-napi:', e.message);
+}
 import { registerGlobalShortcut } from '@/electron/globalShortcut';
 import cloneDeep from 'lodash/cloneDeep';
 import shortcuts from '@/utils/shortcuts';
@@ -141,7 +146,11 @@ export function initIpcMain(win, store, trayEventEmitter) {
 
   // WIP: Do not enable logging as it has some issues in non-blocking I/O environment.
   // UNM.enableLogging(UNM.LoggingType.ConsoleEnv);
-  const unmExecutor = new UNM.Executor();
+  const unmExecutor = UNM ? new UNM.Executor() : null;
+
+  ipcMain.handle('unm-status', () => ({
+    available: !!unmExecutor,
+  }));
 
   ipcMain.handle(
     'unblock-music',
@@ -153,6 +162,10 @@ export function initIpcMain(win, store, trayEventEmitter) {
      * @param {UNM.Context} context
      */
     async (_, sourceListString, ncmTrack, context) => {
+      if (!unmExecutor) {
+        log('[UNM] native module not available, skipping unblock');
+        return null;
+      }
       // Formt the track input
       // FIXME: Figure out the structure of Track
       const song = {

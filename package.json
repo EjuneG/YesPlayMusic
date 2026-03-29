@@ -22,7 +22,6 @@
   "dependencies": {
     "@neteaseapireborn/api": "^4.29.7",
     "@unblockneteasemusic/rust-napi": "^0.4.0",
-    "@unblockneteasemusic/rust-napi-linux-x64-gnu": "^0.4.0",
     "axios": "^0.26.1",
     "change-case": "^4.1.2",
     "cli-color": "^2.0.0",
@@ -82,6 +81,12 @@
     "vite": "^8.0.3",
     "vite-plugin-svg-icons": "^2.0.1",
     "vitest": "^4.1.2"
+  },
+  "optionalDependencies": {
+    "@unblockneteasemusic/rust-napi-win32-x64-msvc": "^0.4.0",
+    "@unblockneteasemusic/rust-napi-darwin-x64": "^0.4.0",
+    "@unblockneteasemusic/rust-napi-darwin-arm64": "^0.4.0",
+    "@unblockneteasemusic/rust-napi-linux-x64-gnu": "^0.4.0"
   },
   "resolutions": {
     "icon-gen": "3.0.0",
