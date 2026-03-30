@@ -1066,12 +1066,12 @@
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-android-arm64/-/rust-napi-android-arm64-0.4.0.tgz#8ca2e90f445672eb91c13cbb5169f7f9c21b08ef"
   integrity sha512-gV6bPA6Ve8uK9NM9n6hw/XVcOnFJUsfZkCawiZBeUbpGilcgJdE0KzxDVvdM7UtOSebdNdlOjix1o0zyYPtZ4w==
 
-"@unblockneteasemusic/rust-napi-darwin-arm64@0.4.0":
+"@unblockneteasemusic/rust-napi-darwin-arm64@0.4.0", "@unblockneteasemusic/rust-napi-darwin-arm64@^0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-darwin-arm64/-/rust-napi-darwin-arm64-0.4.0.tgz#311564870084790e3af98586174acd83a55de84a"
   integrity sha512-2aRJaODkgQST++6jRovr6xwp4oJaUprGaPXFNbW0v9v7kmwrwXaXg5zz0TOoP28MB41hJQ48KjTNY0VaPzDROw==
 
-"@unblockneteasemusic/rust-napi-darwin-x64@0.4.0":
+"@unblockneteasemusic/rust-napi-darwin-x64@0.4.0", "@unblockneteasemusic/rust-napi-darwin-x64@^0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-darwin-x64/-/rust-napi-darwin-x64-0.4.0.tgz#7ddd74ef08390c52abdd7ac34a6fd344f24653bd"
   integrity sha512-j1dWvz8+qIoa3750RoibUk59SKPemhcf39uRwp+phfk5mj1+z3sobgcHZfO/3w/6CTtJ0Smh78ljYYIaPycEjQ==
@@ -1116,7 +1116,7 @@
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-win32-ia32-msvc/-/rust-napi-win32-ia32-msvc-0.4.0.tgz#8758ba79e5d8af85b5b42e059382a4866dbe4b13"
   integrity sha512-B86TVJKpsaYwzE5JfkcIvmFIyjo66P999I5RfkzNYVV+vqi9Z5wsOUZ5K9BcECaGtGfyRUJRYUJ8G5R6WdP6ZA==
 
-"@unblockneteasemusic/rust-napi-win32-x64-msvc@0.4.0":
+"@unblockneteasemusic/rust-napi-win32-x64-msvc@0.4.0", "@unblockneteasemusic/rust-napi-win32-x64-msvc@^0.4.0":
   version "0.4.0"
   resolved "https://registry.npmjs.org/@unblockneteasemusic/rust-napi-win32-x64-msvc/-/rust-napi-win32-x64-msvc-0.4.0.tgz#bfb173acb99147fb9aee7520a9db21514f5ac791"
   integrity sha512-b0BzkWHxzcXRtFAMi8CluPgfuUympnqI2lgXMVNYEKllcQj/Hu5crQIKB4A3w8Z5d9xxW9qIMGo8y66ygXRjeg==
