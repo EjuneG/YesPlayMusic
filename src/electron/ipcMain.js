@@ -3,7 +3,10 @@ let UNM;
 try {
   UNM = require('@unblockneteasemusic/rust-napi');
 } catch (e) {
-  console.warn('[ipcMain] Failed to load @unblockneteasemusic/rust-napi:', e.message);
+  console.warn(
+    '[ipcMain] Failed to load @unblockneteasemusic/rust-napi:',
+    e.message
+  );
 }
 import { registerGlobalShortcut } from '@/electron/globalShortcut';
 import cloneDeep from 'lodash/cloneDeep';
