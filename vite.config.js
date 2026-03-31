@@ -41,6 +41,7 @@ export default defineConfig({
         },
   },
   define: {
+    'process.platform': JSON.stringify(isElectron ? process.platform : ''),
     'process.env': JSON.stringify({
       IS_ELECTRON: isElectron,
       VUE_APP_NETEASE_API_URL: '/api',
