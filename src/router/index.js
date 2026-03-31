@@ -129,6 +129,10 @@ const routes = [
     name: 'lastfmCallback',
     component: () => import('@/views/lastfmCallback.vue'),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
+  },
 ];
 
 const router = createRouter({

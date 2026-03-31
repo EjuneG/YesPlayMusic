@@ -18,14 +18,13 @@ yarn install
 cp .env.example .env
 
 # Development
-yarn serve                 # Web dev server (port from DEV_SERVER_PORT env, default 20201)
-yarn electron:serve        # Electron dev (starts API server on port 10754 automatically)
-yarn netease_api:run       # Run Netease API server standalone (port 3000, needed for web dev)
+yarn dev                   # Web dev server (Vite)
+yarn electron:dev          # Electron dev
+yarn netease_api:run       # Run Netease API server standalone (needed for web dev)
 
 # Build
-yarn build                 # Web production build
-yarn electron:build        # Electron build for current platform
-yarn electron:build-linux  # Linux only (also: -mac, -win, -all)
+yarn build                 # Web production build (Vite)
+yarn electron:build-main   # Electron main process build
 
 # Code quality
 yarn lint                  # ESLint (vue/recommended + prettier)

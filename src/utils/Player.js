@@ -37,6 +37,7 @@ const excludeSaveKeys = [
   '_progress',
   '_personalFMLoading',
   '_personalFMNextLoading',
+  '_replaceTrackNonce',
 ];
 
 function setTitle(track) {
@@ -90,6 +91,10 @@ export default class {
      * @type {string[]}
      */
     this.createdBlobRecords = [];
+
+    // 用于解决异步竞态：每次 _replaceCurrentTrack 调用递增，
+    // 旧的请求返回时发现 nonce 不匹配则丢弃结果
+    this._replaceTrackNonce = 0;
 
     // howler (https://github.com/goldfire/howler.js)
     this._howler = null;
@@ -338,6 +343,11 @@ export default class {
         this._nextTrackCallback();
       },
     });
+    this._howler.on('playerror', (_, errCode) => {
+      console.error(`[Player] Howler playerror code: ${errCode}`);
+      store.dispatch('showToast', `播放失败，尝试下一首`);
+      this._playNextTrack(this._isPersonalFM);
+    });
     this._howler.on('loaderror', (_, errCode) => {
       // https://developer.mozilla.org/en-US/docs/Web/API/MediaError/code
       // code 3: MEDIA_ERR_DECODE
@@ -514,17 +524,24 @@ export default class {
     if (autoplay && this._currentTrack.name) {
       this._scrobble(this.currentTrack, this._howler?.seek());
     }
-    return getTrackDetail(id).then(data => {
-      const track = data.songs[0];
-      this._currentTrack = track;
-      this._updateMediaSessionMetaData(track);
-      return this._replaceCurrentTrackAudio(
-        track,
-        autoplay,
-        true,
-        ifUnplayableThen
-      );
-    });
+    const nonce = ++this._replaceTrackNonce;
+    return getTrackDetail(id)
+      .then(data => {
+        if (nonce !== this._replaceTrackNonce) return; // 已有更新的请求，丢弃
+        const track = data.songs[0];
+        this._currentTrack = track;
+        this._updateMediaSessionMetaData(track);
+        return this._replaceCurrentTrackAudio(
+          track,
+          autoplay,
+          true,
+          ifUnplayableThen
+        );
+      })
+      .catch(err => {
+        console.error(`[Player] _replaceCurrentTrack(${id}) failed:`, err);
+        store.dispatch('showToast', `加载歌曲失败，请重试`);
+      });
   }
   /**
    * @returns 是否成功加载音频，并使用加载完成的音频替换了howler实例
@@ -535,36 +552,45 @@ export default class {
     isCacheNextTrack,
     ifUnplayableThen = UNPLAYABLE_CONDITION.PLAY_NEXT_TRACK
   ) {
-    return this._getAudioSource(track).then(source => {
-      if (source) {
-        let replaced = false;
-        if (track.id === this.currentTrackID) {
-          this._playAudioSource(source, autoplay);
-          replaced = true;
+    return this._getAudioSource(track)
+      .then(source => {
+        if (source) {
+          let replaced = false;
+          if (track.id === this.currentTrackID) {
+            this._playAudioSource(source, autoplay);
+            replaced = true;
+          }
+          if (isCacheNextTrack) {
+            this._cacheNextTrack();
+          }
+          return replaced;
+        } else {
+          store.dispatch('showToast', `无法播放 ${track.name}`);
+          switch (ifUnplayableThen) {
+            case UNPLAYABLE_CONDITION.PLAY_NEXT_TRACK:
+              this._playNextTrack(this.isPersonalFM);
+              break;
+            case UNPLAYABLE_CONDITION.PLAY_PREV_TRACK:
+              this.playPrevTrack();
+              break;
+            default:
+              store.dispatch(
+                'showToast',
+                `undefined Unplayable condition: ${ifUnplayableThen}`
+              );
+              break;
+          }
+          return false;
         }
-        if (isCacheNextTrack) {
-          this._cacheNextTrack();
-        }
-        return replaced;
-      } else {
-        store.dispatch('showToast', `无法播放 ${track.name}`);
-        switch (ifUnplayableThen) {
-          case UNPLAYABLE_CONDITION.PLAY_NEXT_TRACK:
-            this._playNextTrack(this.isPersonalFM);
-            break;
-          case UNPLAYABLE_CONDITION.PLAY_PREV_TRACK:
-            this.playPrevTrack();
-            break;
-          default:
-            store.dispatch(
-              'showToast',
-              `undefined Unplayable condition: ${ifUnplayableThen}`
-            );
-            break;
-        }
+      })
+      .catch(err => {
+        console.error(
+          `[Player] _replaceCurrentTrackAudio(${track?.id}) failed:`,
+          err
+        );
+        store.dispatch('showToast', `加载音频失败，请重试`);
         return false;
-      }
-    });
+      });
   }
   _cacheNextTrack() {
     let nextTrackID = this._isPersonalFM

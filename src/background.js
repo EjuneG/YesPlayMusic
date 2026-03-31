@@ -175,6 +175,10 @@ class Background {
           });
         });
     });
+    // SPA fallback: serve index.html for any unmatched routes
+    expressApp.use((req, res) => {
+      res.sendFile(path.join(rendererDir, 'index.html'));
+    });
     this.expressApp = expressApp.listen(27232, '127.0.0.1');
   }
 
