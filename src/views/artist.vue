@@ -186,7 +186,7 @@ import {
   similarArtists,
 } from '@/api/artist';
 import { getTrackDetail } from '@/api/track';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import { isAccountLoggedIn } from '@/utils/auth';
 import NProgress from 'nprogress';
 import { resizeImage, formatDate, formatAlbumType } from '@/utils/filters';

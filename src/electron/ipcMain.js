@@ -224,7 +224,7 @@ export function initIpcMain(win, store, trayEventEmitter) {
       win.hide();
       exitAsk(e, win);
     } else {
-      let closeOpt = store.get('settings.closeAppOption');
+      let closeOpt = store.get('settings.closeAppOption') || 'ask';
       if (closeOpt === 'exit') {
         win = null;
         //app.quit();

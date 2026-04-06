@@ -85,6 +85,12 @@
           $t('contextMenu.copyUrl')
         }}</div>
         <div
+          v-show="type !== 'cloudDisk' && rightClickedTrackComputed.al.id"
+          class="item"
+          @click="goToAlbum"
+          >{{ $t('contextMenu.goToAlbum') }}</div
+        >
+        <div
           v-if="extraContextMenuItem.includes('removeTrackFromCloudDisk')"
           class="item"
           @click="removeTrackFromCloudDisk"
@@ -145,7 +151,7 @@ import { resizeImage } from '@/utils/filters';
 
 import TrackListItem from '@/components/TrackListItem.vue';
 import ContextMenu from '@/components/ContextMenu.vue';
-import locale from '@/locale';
+import { locale } from '@/locale';
 
 export default {
   name: 'TrackList',
@@ -408,6 +414,12 @@ export default {
         .catch(err => {
           this.showToast(`${locale.t('toast.copyFailed')}${err}`);
         });
+    },
+    goToAlbum() {
+      const al = this.rightClickedTrack.al || this.rightClickedTrack.album;
+      if (al?.id) {
+        this.$router.push({ path: '/album/' + al.id });
+      }
     },
     removeTrackFromQueue() {
       this.$store.state.player.removeTrackFromQueue(

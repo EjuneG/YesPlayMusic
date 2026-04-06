@@ -231,6 +231,7 @@ export default {
     addToPlaylist: 'Add to playlist',
     searchInPlaylist: 'Search in playlist',
     copyUrl: 'Copy URL',
+    goToAlbum: 'Albüme Git',
     openInBrowser: 'Open in Browser',
     allPlaylists: 'All Playlists',
     minePlaylists: 'My Playlists',

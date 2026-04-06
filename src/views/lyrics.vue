@@ -310,7 +310,7 @@ import * as Vibrant from 'node-vibrant/dist/vibrant.worker.min.js';
 import Color from 'color';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { hasListSource, getListSourcePath } from '@/utils/playList';
-import locale from '@/locale';
+import { locale } from '@/locale';
 
 export default {
   name: 'Lyrics',

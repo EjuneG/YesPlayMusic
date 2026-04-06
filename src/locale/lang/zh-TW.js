@@ -242,6 +242,7 @@ export default {
     searchInPlaylist: '歌單內搜尋',
     openInBrowser: '在瀏覽器中打開',
     copyUrl: '複製連結',
+    goToAlbum: '前往專輯',
     allPlaylists: '全部歌單',
     minePlaylists: '我建立的歌單',
     likedPlaylists: '收藏的歌單',

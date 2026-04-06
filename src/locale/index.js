@@ -18,4 +18,5 @@ const i18n = createI18n({
   silentTranslationWarn: true,
 });
 
-export default i18n;
+export { i18n as default };
+export const locale = i18n.global;

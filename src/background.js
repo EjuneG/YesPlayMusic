@@ -39,7 +39,7 @@ const log = text => {
 };
 
 const closeOnLinux = (e, win, store) => {
-  let closeOpt = store.get('settings.closeAppOption');
+  let closeOpt = store.get('settings.closeAppOption') || 'ask';
   if (closeOpt !== 'exit') {
     e.preventDefault();
   }

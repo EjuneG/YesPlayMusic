@@ -40,9 +40,10 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import { getTrackDetail } from '@/api/track';
 import { search } from '@/api/others';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import { camelCase } from 'change-case';
 import NProgress from 'nprogress';
 
@@ -83,6 +84,7 @@ export default {
     this.fetchData();
   },
   methods: {
+    ...mapActions(['showToast']),
     fetchData() {
       const typeTable = {
         musicVideos: 1004,
@@ -124,6 +126,12 @@ export default {
         }
         NProgress.done();
         this.show = true;
+      }).catch(err => {
+        NProgress.done();
+        this.show = true;
+        this.showToast(
+          err?.response?.data?.msg || err?.response?.data?.message || 'Error'
+        );
       });
     },
     getTracksDetail() {

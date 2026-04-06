@@ -99,7 +99,8 @@ export default {
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.08);
   }
   .menu .item:hover {
-    color: var(--color-text);
+    color: var(--color-primary);
+    background: var(--color-primary-bg-for-transparent);
   }
 }
 

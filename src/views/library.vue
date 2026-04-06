@@ -220,7 +220,7 @@ import { isAccountLoggedIn } from '@/utils/auth';
 import { uploadSong } from '@/api/user';
 import { getLyric } from '@/api/track';
 import NProgress from 'nprogress';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import { resizeImage } from '@/utils/filters';
 
 import ContextMenu from '@/components/ContextMenu.vue';

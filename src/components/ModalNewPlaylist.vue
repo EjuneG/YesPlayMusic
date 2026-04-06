@@ -30,7 +30,7 @@
 
 <script>
 import Modal from '@/components/Modal.vue';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import { mapMutations, mapState, mapActions } from 'vuex';
 import { createPlaylist, addOrRemoveTrackFromPlaylist } from '@/api/playlist';
 

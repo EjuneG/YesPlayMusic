@@ -47,7 +47,7 @@ import { mvDetail, mvUrl, simiMv, likeAMV } from '@/api/mv';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { formatPlayCount } from '@/utils/filters';
 import NProgress from 'nprogress';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import '@/assets/css/plyr.css';
 import Plyr from 'plyr';
 

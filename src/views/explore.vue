@@ -82,15 +82,6 @@ export default {
     SvgIcon,
   },
   inject: ['restoreScrollPosition'],
-  beforeRouteUpdate(to, from, next) {
-    this.showLoadMoreButton = false;
-    this.hasMore = true;
-    this.playlists = [];
-    this.offset = 1;
-    this.activeCategory = to.query.category;
-    this.getPlaylist();
-    next();
-  },
   data() {
     return {
       show: false,
@@ -102,6 +93,17 @@ export default {
       allBigCats: ['语种', '风格', '场景', '情感', '主题'],
       showCatOptions: false,
     };
+  },
+  watch: {
+    '$route.query.category'(newVal) {
+      if (this.$route.name !== 'explore') return;
+      this.showLoadMoreButton = false;
+      this.hasMore = true;
+      this.playlists = [];
+      this.offset = 1;
+      this.activeCategory = newVal || '全部';
+      this.getPlaylist();
+    },
   },
   computed: {
     ...mapState(['settings']),

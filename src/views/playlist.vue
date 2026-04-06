@@ -231,7 +231,7 @@ import {
 import { getTrackDetail } from '@/api/track';
 import { isAccountLoggedIn } from '@/utils/auth';
 import nativeAlert from '@/utils/nativeAlert';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import { resizeImage, formatDate } from '@/utils/filters';
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue';

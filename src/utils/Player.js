@@ -206,6 +206,7 @@ export default class {
   set progress(value) {
     if (this._howler) {
       this._howler.seek(value);
+      this._progress = value;
       if (isCreateMpris) {
         electronAPI?.send('seeked', this._howler.seek());
       }

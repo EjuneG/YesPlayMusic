@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import locale from '@/locale';
+import { locale } from '@/locale';
 
 export function formatTime(Milliseconds, format = 'HH:MM:SS') {
   if (!Milliseconds) return '';

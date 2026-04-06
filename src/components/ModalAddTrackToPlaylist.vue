@@ -30,7 +30,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex';
 import Modal from '@/components/Modal.vue';
-import locale from '@/locale';
+import { locale } from '@/locale';
 import { resizeImage } from '@/utils/filters';
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist';
 
